@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<link rel="stylesheet" href="./css/bootstrap.css">
+	<link rel="stylesheet" href="./css/index.css">
+	<script src="./js/jquery.min.js" ></script>
+	<script src="./js/bootstrap.js" ></script>
+	<script src="./js/echarts.js" ></script>
+	<script src="./js/config.js" ></script>
+	<meta charset="UTF-8">
+	<title>客流统计系统</title>
+</head>
+<body style="background-color: rgb(245,245,245); overflow-x: hidden;">
+	<div class="row">
+		<nav class="navbar navbar-inverse">
+		  <h3 style="color:#fff;" id="title">
+			<img src="./images/logo.png" alt="" style="margin-right: 10px;">客流统计系统</h3>
+		</nav>
+	</div>
+	<div class="row" style="margin-bottom: 20px;">
+	  <div class="col-md-2 storeDropMenu">
+		  <div class="dropdown">
+			  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" style="width: 100%;text-align: left;">
+			    <span id="first-store" data></span>
+			    <img src="./images/drop-big.png" alt="" id="drop-big">
+			  </button>
+			  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" id="storeList"  style="width: 100%;">
+			  </ul>
+		   </div>
+		</div>
+	</div>
+	<div class="row">
+		<!-- 实时统计人数 start -->
+	  <div class="col-md-5">
+		<div class="panel panel-default" >
+		  <div class="panel-body"  >
+		    <h3 style="text-align: center;">实时人数统计</h3>
+		    <div class="row" style="padding: 0 30px;margin: 60px 0 80px 0;">
+			  <div class="col-md-3 people-number" style="margin:0 20px 0 11px;">
+				  <div style="flex: 1;text-align: center;">
+				 	 <img src="./images/1.png" alt="">
+				  </div>
+				  <div style="flex: 1">
+				 	 <span>进店人数</span>
+				 	 <h1 id="come-store"></h1>
+				  </div>
+			  </div>
+			  <div class="col-md-3 people-number"  >
+				  <div style="flex: 1;text-align: center;">
+				 	 <img src="./images/2.png" alt="">
+				  </div>
+				  <div style="flex: 1">
+				 	 <span>出店人数</span>
+				 	 <h1 id="out-store"></h1>
+				  </div>
+			  </div>
+			  <div class="col-md-3 people-number" style="margin-left: 20px;">
+		  		<div style="flex: 1;text-align: center;">
+				 	<img src="./images/3.png" alt="">
+				</div>
+				<div style="flex: 1">
+				 	<span>店内人数</span>
+				 	 <h1 id="in-store"></h1>
+				</div>
+			  </div>
+			</div>
+		  </div>
+		</div>
+	  </div>
+		<!-- 实时统计人数 end -->
+		<!-- 各位置人数统计 start -->
+	  <div class="col-md-5" style="height: 100%">
+		<div class="panel panel-default" >
+		  <div class="panel-body" >
+		    <h3 style="text-align: center;">各位置人数统计</h3>
+		    <div class="count-people-table">
+		    	<table style="width: 100%;" id="count-people-list">
+		    		<tr style="height: 50px;background-color: rgb(249,249,249);">
+		    			<th>
+		    			</th>
+		    			<th>
+		    			进入人数
+		    			</th>
+		    			<th>
+		    			出去人数
+		    			</th>
+		    		</tr>
+		    	</table>
+		    </div>
+		  </div>
+		</div>
+	  </div>
+		<!-- 各位置人数统计 end -->
+	</div>
+	<div class="row">
+	  <div class="col-md-5">
+		<div class="panel panel-default">
+		  <div class="panel-body" >
+		    <h3 style="text-align: center;">今日人数统计</h3>
+		    <div id="todayCount">
+		    </div>
+		  </div>
+		</div>
+	  </div>
+	  <div class="col-md-5">
+		<div class="panel panel-default">
+		  <div class="panel-body" id="history" >
+		    <h3 style="text-align: center;">历史人数统计</h3>
+			<div class="type-group"  style="position: absolute;right: 10%;z-index: 2">
+				<span id="week" class="checkTime"><label for="">本周</label></span><span id="monthType"><label for="">每月</label><img src="./images/drop-small.png" alt="" class="yue"></span><span id="yearType"><label for="">每年</label><img src="./images/drop-small.png" alt="" class="nian"></span>
+			    <ul class="dropdown-menu liStyleShort month">
+<!-- 			      <li class="liStyle" num=1>1月</li>
+			      <li class="liStyle" num=2>2月</li>
+			      <li class="liStyle" num=3>3月</li>
+			      <li class="liStyle" num=4>4月</li> -->
+			    </ul>
+			    <ul class="dropdown-menu liStyleShort year">
+			      <!-- <li class="liStyle" num=2015>2015年</li>
+			      <li class="liStyle" num=2016>2016年</li>
+			      <li class="liStyle" num=2017>2017年</li>
+			      <li class="liStyle" num=2018>2018年</li> -->
+			    </ul>
+			</div>
+		    <div id="historyCount"></div>
+		  </div>
+	  	</div>
+	</div>
+</body>
+<script src="./js/template.js"></script>
+<script id="storeTemplate" type="text/html">
+        {{each }}
+        	<li data={{$value.id}} class="liStyle">{{$value.name}}</li>
+        {{/each}}
+</script>
+<script id="countPeopleTemplate" type="text/html">
+	<tr style="height: 50px;background-color: rgb(249,249,249);">
+		<th></th><th>进入人数</th><th>出去人数</th>
+	</tr>
+    {{each}}
+    <tr style="border-bottom: 2px dashed rgb(244,244,244);height:63px; ">
+	    <td><span style="margin: 0 8px 0 20px;"><img src="./images/camera.png" alt="" style="vertical-align: baseline;"></span>{{$value.name}}</td>
+	    <td style="color:  #F5793B;font-size: 30px;">{{$value.enterNum}}</td>
+	    <td style="color: #49A8C6;font-size: 30px;">{{$value.leaveNum}}</td>
+    </tr>
+    {{/each}}
+</script>
+<script>
+var storeId;
+function getStores(){
+	$.ajax({
+		method:"GET",
+		url:reqUrl+"/api/getStores",
+		success:function (res) {
+			console.log(res.stores)
+			var storeArr = res.stores;
+			storeId = storeArr[0].id;
+		    getCounts(storeId);//获取摄像头数目
+			getTodayCounts(storeId)//今日统计
+		    getHistoryCounts(storeId,2,0);//历史统计
+			$("#first-store").html(storeArr[0].name).attr("data",storeArr[0].id)
+			var storeHtml = template('storeTemplate', storeArr);// 
+		    document.getElementById('storeList').innerHTML = storeHtml;//
+		},
+		error:function (error) {
+			console.log(error)
+		}
+	})
+}
+getStores();
+
+function getCounts(storeId) {
+	$.ajax({
+		method:"GET",
+		url: reqUrl + "/api/getCounts",
+		data: {storeId},
+		success:function (res) {
+			console.log(res.cameras);
+			var cameraArr = res.cameras;
+			var OutNum = 0;
+			var ComeNum = 0;
+			cameraArr.forEach(function(value,index,array){
+				OutNum += value.leaveNum;
+				ComeNum += value.enterNum;
+			},this);
+			var InNum = ComeNum -  OutNum;
+			$("#out-store").html(OutNum)
+			$("#come-store").html(ComeNum)
+			$("#in-store").html(InNum)
+			var cameraHtml = template('countPeopleTemplate', cameraArr);// 
+		    document.getElementById('count-people-list').innerHTML = cameraHtml;//
+		},
+		error:function (error) {
+			console.log(error)
+		}
+	})
+}
+
+var getCountsInterval = setInterval(function(){
+	getCounts(storeId);
+},30000)
+
+var getTodayCountsInterval = setInterval(function(){
+	getTodayCounts(storeId);
+},60000)
+// 切换场所 start
+$("#storeList").on("click","li",function() {
+	var storeName = $(this).html();
+	storeId = $(this).attr("data");
+	if(storeName == $("#first-store").html()){
+		return;
+	}
+	getCounts(storeId);
+	getTodayCounts(storeId)
+	getHistoryCounts(storeId,2,0);
+	$("#week").click();
+	$("#first-store").html(storeName);
+})
+// 切换场所 end
+var leftCharts;
+function drawToday(x,yEnter,yLeave){
+  var dom = document.getElementById("todayCount");
+  var myChart = echarts.init(dom);
+  var app = {};
+  option = null;
+  option = {
+      tooltip: {
+          trigger: 'axis'
+      },
+      legend: {
+          data:['进店人数','出店人数'],
+          right:"70px"
+      },
+    
+      xAxis: {
+          type: 'category',
+          boundaryGap: false,
+          data: x||["0:00", "1:00", "2:00", "3:00", "4:00", "5:00", "6:00", "7:00", "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"]
+      },
+      yAxis: {
+          type: 'value'
+      },
+      series: [{
+          name: '进店人数',
+          type: 'bar',
+          smooth: true,
+          data: yEnter || [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          color:"#F5793B"
+      },
+      {
+          name: '出店人数',
+          type: 'bar',
+          smooth: true,
+          data: yLeave || [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          color: "#49A8C6"
+      },
+   
+      ]
+  };
+	if (option && typeof option === "object") {
+		leftCharts = myChart.setOption(option, true);
+	}
+}
+
+
+function getTodayCounts(storeId){
+	$.ajax({
+		method:"GET",
+		url:reqUrl + "/api/getTodayCounts",
+		data:{storeId},
+		success:function (res) {
+			console.log(res)
+			drawToday(res.x,res.y_enter,res.y_leave);
+		},
+		error:function (error) {
+			console.log(error)
+		}
+	})
+}
+
+var rightCharts;
+function drawHistory(x,yEnter,yLeave){
+  var dom = document.getElementById("historyCount");
+  var myChart = echarts.init(dom);
+  var app = {};
+  option = null;
+  option = {
+      tooltip: {
+          trigger: 'axis'
+      },
+    
+      xAxis: {
+          type: 'category',
+          boundaryGap: false,
+          data: x,
+          offset:0
+      },
+      yAxis: {
+          type: 'value'
+      },
+      series: [{
+          name: "进店人数",
+          type: 'line',
+          smooth: true,
+          data: yEnter,
+          color:"#F5793B"
+      },
+      {
+          name: '出店人数',
+          type: 'line',
+          smooth: true,
+          data: yLeave,
+          color: "#49A8C6"
+      }
+      ]
+  };
+	if (option && typeof option === "object") {
+		rightCharts = myChart.setOption(option, true);
+	}
+}
+// drawHistory();
+
+
+function getHistoryCounts(storeId,type,num){
+		$.ajax({
+			method:"GET",
+			url: reqUrl + "/api/getHistoryCounts",
+			data:{storeId,type,num},
+			success:function (res) {
+				console.log(res)
+				drawHistory(res.x,res.y_enter,res.y_leave)
+			},
+			error:function (error) {
+				console.log(error)
+			}
+		})
+}
+
+function addHistoryMonth(){
+	var nowMonth = new Date().getMonth()+1;
+	var liArr = "";
+	for(let i = 1;i<=nowMonth;i++){
+		liArr += `<li class="liStyle" num=${i}>${i}月</li>`;
+	}
+	$(".month").html(liArr);
+	console.log("当前月份：",nowMonth)
+}
+function addHistoryYear(){
+	var nowYear = new Date().getFullYear();
+	var liArr = "";
+	for(let i = 3;i>=0;i--){
+		liArr += `<li class="liStyle" num=${2018-i}>${2018-i}年</li>`;
+	}
+	$(".year").html(liArr);
+	console.log("当前年份：",nowYear)
+}
+addHistoryMonth()
+addHistoryYear()
+$("#week").on("click",function () {
+	$(this).siblings("span").find("label").removeClass("clickType").removeClass("whiteType");
+	$(this).siblings("span").css("color","#000");
+	$(this).addClass("checkTime").siblings("span").removeClass("checkTime")
+	$("#monthType").css("width","56px")
+	getHistoryCounts(storeId,2,0)
+})
+$("#yearType").on("click",function(){
+	$(this).find("label").addClass("clickType").parent().siblings("span").find("label").removeClass("clickType").removeClass("whiteType");;
+	$(".year").show()
+	$(".month").hide();
+})
+$("#monthType").on("click",function(){
+	$(this).find("label").addClass("clickType").parent().siblings("span").find("label").removeClass("clickType").removeClass("whiteType");;
+	$(".month").show();
+	$(".year").hide();
+})
+$(".year li").click(function () {
+	var year = $(this).attr("num")
+	$("#yearType label").text($(this).html())
+	$("#yearType label").removeClass("clickType").addClass("whiteType")
+	$("#yearType").addClass("checkTime").siblings("span").removeClass("checkTime").find("label").removeClass("whiteType");
+	$("#yearType").css("width","66px")
+	$("#monthType").css("width","56px")
+	getHistoryCounts(storeId,4,year)
+	$(".year").hide();
+	console.log()
+})
+$(".month li").click(function () {
+	var month = $(this).attr("num")
+	$("#monthType label").html($(this).html())
+	$("#monthType label").removeClass("clickType").addClass("whiteType")
+	$("#monthType").addClass("checkTime").siblings("span").removeClass("checkTime").find("label").removeClass("whiteType");
+	$("#yearType").css("width","56px")
+	$("#monthType").css("width","66px")
+	$(".month").hide();
+	getHistoryCounts(storeId,3,month)
+	console.log($(this).html())
+})
+$(document).click(function(e){
+
+	if(e.toElement==undefined){
+		$("#monthType label").removeClass("clickType");
+		$(".month").hide();
+		$("#yearType label").removeClass("clickType");
+		$(".year").hide();
+		return;
+	}
+	if($(".month").is(":hidden")){ 
+		console.log("hide")
+	}else{
+		// if(e.toElement==undefined){
+		// 	$("#monthType label").removeClass("clickType");
+		// 	$(".month").hide();
+		// }else{
+			if(e.toElement.className!="clickType"&&e.toElement.className!="listType"&&e.toElement.className!="yue"){
+				$("#monthType label").removeClass("clickType");
+				if(e.toElement.className=="whiteType"){
+					console.log("???")
+					return;
+				}else{
+					
+				}
+				console.log("1851",e.toElement.className)
+				$(".month").hide();
+			}else{
+
+			console.log(e.toElement.className)
+			}
+		// }
+	}
+	if($(".year").is(":hidden")){ 
+		console.log("hide")
+	}else{
+		console.log("123121321",e.toElement)
+		// if(e.toElement==undefined){
+		// 	$("#yearType label").removeClass("clickType");
+		// 	$(".year").hide();
+		// }else{
+			if(e.toElement.className!="clickType"&&e.toElement.className!="listType"&&e.toElement.className!="nian"){
+				$("#yearType label").removeClass("clickType");
+				if(e.toElement.className=="whiteType"){
+					console.log("nnn???")
+					return;
+				}else{
+
+				}
+				console.log("1851",e.toElement.className)
+				$(".year").hide();
+			}else{
+
+			// console.log(e.toElement.className)
+			}
+		// }
+		
+	}
+})
+</script>
+</html>
